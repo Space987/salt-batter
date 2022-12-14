@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    >
+
+    <item android:id="@+id/subItemHome"
+                android:icon="@drawable/ic_baseline_home_24"
+                android:title="Home"
+                app:showAsAction="always|withText" />
+
+            <item android:id="@+id/subItemOrder"
+                android:title="Make Order"
+                app:showAsAction="collapseActionView|withText"
+                />
+
+    <item android:id="@+id/orderHistory"
+        android:title="View Order History"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/subItemMenu"
+        android:title="View Menu"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/subItemLocations"
+        android:title="View Location"
+        app:showAsAction="never"/>
+    <item android:id="@+id/subItemContact"
+        android:title="Contact"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/subItemViewMessages"
+        android:title="View Messages"
+        app:showAsAction="never"/>
+    <item android:id="@+id/subItemAccount"
+        android:title="View Account"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/subItemOptions"
+        android:title="Options"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/subItemLogout"
+        android:title="Logout"
+        app:showAsAction="never"/>
+        </menu>
+
+
