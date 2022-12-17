@@ -33,7 +33,10 @@ public class ViewMessagesAdmin extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menadmin, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
+
+        getSupportActionBar().setTitle("admin:" + db.getDataAdmin().getUsername());
 
         return super.onCreateOptionsMenu(menu);
     }

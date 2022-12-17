@@ -31,6 +31,7 @@ public class CartListAdapter extends BaseAdapter {
 
 
     public CartListAdapter(Context mContext , List<OrderFood> data, TextView totalText) {
+
         this.mContext = mContext;
         this.list = data;
         this.myTextView = totalText;
@@ -54,9 +55,8 @@ public class CartListAdapter extends BaseAdapter {
     @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-
         View view = View.inflate(mContext, R.layout.cart_list_child ,null );
+
         TextView name = view.findViewById(R.id.textViewNameOrder);
         TextView cost = view.findViewById(R.id.textViewPrice);
         TextView quantity = view.findViewById(R.id.textViewQuantity);
@@ -76,6 +76,7 @@ public class CartListAdapter extends BaseAdapter {
         deletBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(mContext, list.get(position).getName()+" removed!", Toast.LENGTH_SHORT).show();
                 db.deleteOrder(list.get(position).getId());
                 db.removeTotal(list.get(position).getProfile_id(), (db.getDataSpecific(list.get(position).getProfile_id()).getTotal() / list.get(position).getQuantity()));
             }

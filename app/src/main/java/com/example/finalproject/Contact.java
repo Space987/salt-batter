@@ -9,6 +9,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,7 +31,6 @@ import kotlin.text.Regex;
 
 public class Contact extends AppCompatActivity {
 
-    TextView userText;
     Button sendBtn;
     EditText emailText, messageText;
     DatabaseHelper db;
@@ -38,11 +41,9 @@ public class Contact extends AppCompatActivity {
         emailText = findViewById(R.id.editTextEmail);
         messageText = findViewById(R.id.editTextMessage);
         sendBtn = findViewById(R.id.buttonSend);
-        userText = findViewById(R.id.textViewName);
         db = new DatabaseHelper(getApplicationContext());
 
         User user = (User) getIntent().getSerializableExtra("user");
-        userText.setText(user.getUsername());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("My Notification",
@@ -108,6 +109,17 @@ public class Contact extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.men, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

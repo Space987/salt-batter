@@ -5,6 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +23,7 @@ import android.widget.Toast;
 public class Cart extends AppCompatActivity {
 
     Button confirmBtn, backBtn;
-    TextView userText, costText;
+    TextView costText;
     ListView lv;
     DatabaseHelper db;
     int currentTotal = 0;
@@ -32,12 +36,10 @@ public class Cart extends AppCompatActivity {
         db = new DatabaseHelper(this);
         lv = findViewById(R.id.cartListView);
         confirmBtn = findViewById(R.id.ConfirmOrderBtn);
-        userText = findViewById(R.id.textViewName);
         costText = findViewById(R.id.textViewCostValue);
 
         User user = (User) getIntent().getSerializableExtra("user");
 
-        userText.setText(db.getDataSpecific(user.getId()).getUsername());
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
         CartListAdapter cartListAdapter = new CartListAdapter(Cart.this, db.getOrder(user.getId()), costText);
@@ -54,6 +56,7 @@ public class Cart extends AppCompatActivity {
                     for(OrderFood order : db.getOrder((user.getId()))) {
 
                         if(db.getOrderHistory(user.getId()).isEmpty()){
+
                             checkIncrementEmpty = true;
                             db.createOrderHistory(user.getId(), order.getFood_id(), order.getName(), order.getCost(), order.getQuantity(), 1);
                             db.deleteOrder(order.getId());
@@ -120,7 +123,6 @@ public class Cart extends AppCompatActivity {
                 costText.setText(String.valueOf(currentTotal));
 
 
-        userText.setText(user.getUsername());
 
     }
 
@@ -129,6 +131,19 @@ public class Cart extends AppCompatActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.men, menu);
+
+
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return super.onCreateOptionsMenu(menu);
     }

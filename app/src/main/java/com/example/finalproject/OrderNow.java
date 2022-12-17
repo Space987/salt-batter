@@ -5,6 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +24,7 @@ public class OrderNow extends AppCompatActivity {
 
     ListView lv;
     Button orderBtn;
-    TextView userText, priceText;
+    TextView priceText;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -28,7 +32,6 @@ public class OrderNow extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_now);
         lv = findViewById(R.id.listView);
-        userText = findViewById(R.id.textViewNameOrder);
         priceText = findViewById(R.id.textViewTotal);
         orderBtn = findViewById(R.id.buttonOrder);
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
@@ -36,7 +39,6 @@ public class OrderNow extends AppCompatActivity {
 
         User user = (User) getIntent().getSerializableExtra("user");
 
-        userText.setText(db.getDataSpecific(user.getId()).getUsername());
         priceText.setText(String.valueOf(db.getDataSpecific(user.getId()).getTotal()));
         CustomListAdapter customListAdapter = new CustomListAdapter(OrderNow.this, db.getDataFood(), user.getId());
         lv.setAdapter(customListAdapter);
@@ -63,6 +65,18 @@ public class OrderNow extends AppCompatActivity {
 
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.men, menu);
+
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return true;
     }
@@ -92,6 +106,7 @@ public class OrderNow extends AppCompatActivity {
                 Intent iOrderHistory = new Intent(getApplicationContext(), OrderHistory.class);
                 User userOrderHistory = (User) getIntent().getSerializableExtra("user");
                 iOrderHistory.putExtra("user", userOrderHistory);
+
                 startActivity(iOrderHistory);
                 return true;
 

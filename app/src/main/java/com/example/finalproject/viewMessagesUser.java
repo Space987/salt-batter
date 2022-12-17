@@ -4,6 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,18 +20,15 @@ public class viewMessagesUser extends AppCompatActivity {
 
     ListView lv;
     DatabaseHelper db;
-    TextView userText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_messages_user);
         db = new DatabaseHelper(getApplicationContext());
         lv = findViewById(R.id.messagesListView);
-        userText = findViewById(R.id.textViewName);
 
         User user = (User) getIntent().getSerializableExtra("user");
 
-        userText.setText(db.getDataSpecific(user.getId()).getUsername());
 
         viewMessagesListAdapter viewMessagesListAdapters = new viewMessagesListAdapter(getApplicationContext(), db.getMessageSpecific(user.getId()));
         lv.setAdapter(viewMessagesListAdapters);
@@ -39,6 +40,17 @@ public class viewMessagesUser extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.men, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

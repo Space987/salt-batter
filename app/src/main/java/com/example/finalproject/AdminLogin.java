@@ -23,6 +23,7 @@ public class AdminLogin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_login);
+        getSupportActionBar().setTitle("Salt&Batter");
         userText = findViewById(R.id.editTextUsernameAdmin);
         passText = findViewById(R.id.editTextPasswordAdmin);
         loginBtn = findViewById(R.id.loginButtonAdmin);
@@ -30,7 +31,8 @@ public class AdminLogin extends AppCompatActivity {
         showBtn = findViewById(R.id.showPassBtn2);
         hide = findViewById(R.id.textViewTemp3);
 
-
+        userText.setBackgroundResource(R.drawable.my_shape_admin);
+        passText.setBackgroundResource(R.drawable.my_shape_admin);
         showBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,15 +51,43 @@ public class AdminLogin extends AppCompatActivity {
             public void onClick(View view) {
                 DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
+                if(!userText.getText().toString().matches("")) {
+                    userText.setBackgroundResource(R.drawable.my_shape_admin);
+
+
+                    if (!passText.getText().toString().matches("")) {
+                        passText.setBackgroundResource(R.drawable.my_shape_admin);
                         if (db.getDataAdmin().getUsername().equals(userText.getText().toString()) && db.getDataAdmin().getPassword().equals(passText.getText().toString())) {
+                            userText.setBackgroundResource(R.drawable.my_shape_correct_admin);
+                            passText.setBackgroundResource(R.drawable.my_shape_correct_admin);
                             Intent i = new Intent(getApplicationContext(), MainActivity.class);
                             i.putExtra("admin", db.getDataAdmin());
                             i.putExtra("check", "admin");
                             startActivity(i);
                         } else {
-                            Toast.makeText(getApplicationContext(), "Incorrect username and/or password", Toast.LENGTH_SHORT).show();
+                            userText.setError("Your Username/Password is not correct!");
+                            userText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                            passText.setError("Your Username/Password is not correct!");
+                            passText.setBackgroundResource(R.drawable.my_shape_error_admin);
 
                         }
+                    }
+                    else{
+                        passText.setError("You cannot leave password input blank!");
+                        passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    }
+                }
+                else{
+                    userText.setError("You cannot leave username input blank!");
+                    userText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    if(passText.getText().toString().matches("")){
+                        passText.setError("You cannot leave password input blank!");
+                        passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    }
+                    else{
+                        passText.setBackgroundResource(R.drawable.my_shape_admin);
+                    }
+                }
 
             }
         });

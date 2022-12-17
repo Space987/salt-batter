@@ -70,8 +70,13 @@ public class CustomListAdapter extends BaseAdapter {
 
         name.setText(list.get(position).getName());
         cost.setText(list.get(position).getCost() + "$");
-        quantity.setText(String.valueOf(list.get(position).getQuantity()));
-
+        if(db.getDataFoodSpecific(list.get(position).getId()).getQuantity() == 0){
+            quantity.setText("out of stock");
+            quantity.setTextSize(16);
+        }
+        else {
+            quantity.setText(String.valueOf(list.get(position).getQuantity()));
+        }
         Bitmap bmp = BitmapFactory.decodeByteArray(list.get(position).getImageData(), 0,list.get(position).getImageData().length);
         image.setImageBitmap(bmp);
 
@@ -80,7 +85,8 @@ public class CustomListAdapter extends BaseAdapter {
             plusBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(Integer.parseInt(quantity.getText().toString()) != 0) {
+
+                    if(db.getDataFoodSpecific(list.get(position).getId()).getQuantity() != 0) {
                         newQuantity = db.getDataFood().get(position).getQuantity();
                         newQuantity = newQuantity - 1;
                         db.subtractQuantity(list.get(position).getId(), newQuantity);
@@ -90,7 +96,7 @@ public class CustomListAdapter extends BaseAdapter {
                         for(OrderFood order : db.getOrder(myId)){
 
                             if(order.getFood_id() == list.get(position).getId()){
-                                Toast.makeText(mContext, "Item Added to Cart", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, list.get(position).getName()+" Added to Cart", Toast.LENGTH_SHORT).show();
                                 db.updateOrder(myId, list.get(position).getId(), (order.getQuantity() +1));
                                 check = true;
                                 break;
@@ -100,12 +106,12 @@ public class CustomListAdapter extends BaseAdapter {
 
                         if(!check) {
                             if(db.getOrder(myId).isEmpty()) {
-                                Toast.makeText(mContext, "Item Added to Cart", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, list.get(position).getName()+" Added to Cart", Toast.LENGTH_SHORT).show();
                                 db.createOrder(myId, list.get(position).getId(), list.get(position).getName(), list.get(position).getCost(), 1);
                             }
 
                             else {
-                                Toast.makeText(mContext, "Item Added to Cart", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, list.get(position).getName()+" Added to Cart", Toast.LENGTH_SHORT).show();
                                 db.createOrder(myId, list.get(position).getId(), list.get(position).getName(), list.get(position).getCost(), 1);
 
                             }
@@ -114,7 +120,9 @@ public class CustomListAdapter extends BaseAdapter {
                     }
 
                     else{
-                        db.deleteFood(list.get(position).getId());
+                        Toast.makeText(mContext, list.get(position).getName()+ " out of stock", Toast.LENGTH_SHORT).show();
+                        quantity.setText("out of stock");
+                        quantity.setTextSize(16);
                     }
 
                     check = false;

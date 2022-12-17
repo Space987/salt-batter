@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "sqliteDB22.db";
+    private static final String DB_NAME = "sqliteDB30.db";
     private static final int DB_VERSION = 3;
 
     ContentValues contentValues = new ContentValues();

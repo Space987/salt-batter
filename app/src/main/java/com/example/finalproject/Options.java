@@ -6,8 +6,12 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,7 +28,7 @@ import android.widget.Toast;
 public class Options extends AppCompatActivity {
 
     Switch musicSwitch, languageSwitch, themeSwitch;
-    TextView userText, loggedInText, titleText;
+    TextView titleText;
     public static MediaPlayer mediaPlayer = new MediaPlayer();
     ImageView image;
 
@@ -36,14 +40,11 @@ public class Options extends AppCompatActivity {
         musicSwitch = findViewById(R.id.switchMusic);
         languageSwitch = findViewById(R.id.switchLanguage);
         themeSwitch = findViewById(R.id.switchTheme);
-        userText = findViewById(R.id.textViewName2);
-        loggedInText = findViewById(R.id.textViewLoggedIn2);
         image = findViewById(R.id.imageViewShark2);
         titleText = findViewById(R.id.textViewTitleRegister);
 
         ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.OptionsLayout);
         User user = (User) getIntent().getSerializableExtra("user");
-        userText.setText(user.getUsername());
 
 
             if (!mediaPlayer.isPlaying()) {
@@ -79,7 +80,6 @@ public class Options extends AppCompatActivity {
                     languageSwitch.setText("Change Language");
                     musicSwitch.setText("Music Player");
                     themeSwitch.setText("Change Themes");
-                    loggedInText.setText("Logged in as:");
 
                     isChecked = false;
                 }
@@ -90,7 +90,6 @@ public class Options extends AppCompatActivity {
                     languageSwitch.setText("Changer de Langue");
                     musicSwitch.setText("Lecteur de Musique");
                     themeSwitch.setText("Changer de Thème");
-                    loggedInText.setText("Connecté en tant que:");
 
                 }
             }
@@ -131,6 +130,17 @@ public class Options extends AppCompatActivity {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.men, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return super.onCreateOptionsMenu(menu);
     }
 

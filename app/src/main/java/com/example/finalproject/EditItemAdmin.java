@@ -13,6 +13,8 @@ import android.widget.ListView;
 public class EditItemAdmin extends AppCompatActivity {
 
     ListView lv;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +33,10 @@ public class EditItemAdmin extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menadmin, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
 
+
+        getSupportActionBar().setTitle("admin:" + db.getDataAdmin().getUsername());
 
         return super.onCreateOptionsMenu(menu);
     }

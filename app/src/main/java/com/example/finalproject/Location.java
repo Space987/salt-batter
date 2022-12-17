@@ -4,6 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,7 +22,6 @@ public class Location extends AppCompatActivity {
 
     EditText destinationText;
     Button directBtn;
-    TextView userText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +29,10 @@ public class Location extends AppCompatActivity {
         setContentView(R.layout.activity_location);
         destinationText = findViewById(R.id.editTextTextEnterLocation);
         directBtn = findViewById(R.id.buttonLocation);
-        userText = findViewById(R.id.textViewName);
+
 
         User user = (User) getIntent().getSerializableExtra("user");
-        userText.setText(user.getUsername());
+
 
         directBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +68,17 @@ public class Location extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.men, menu);
 
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return true;
     }
 

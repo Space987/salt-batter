@@ -3,17 +3,24 @@ package com.example.finalproject;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.style.ImageSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +28,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
 
-    TextView userText, titleText;
+    TextView titleText;
 
 
 
@@ -29,18 +36,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        userText = findViewById(R.id.textViewName);
         titleText = findViewById(R.id.textViewAdmin);
-
 
         if(getIntent().getStringExtra("check").equals("user")){
             User user = (User) getIntent().getSerializableExtra("user");
-            userText.setText(user.getUsername());
             titleText.setText("Welcome to the Home Page!");
         }
         if(getIntent().getStringExtra("check").equals("admin")){
             Admin admin = (Admin) getIntent().getSerializableExtra("admin");
-            userText.setText(admin.getUsername());
             titleText.setText("Welcome to the Admin Home Page!");
         }
 
@@ -59,10 +62,26 @@ public class MainActivity extends AppCompatActivity {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.men, menu);
 
+            DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+            User user = (User) getIntent().getSerializableExtra("user");
+
+            getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+            Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+            Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+            getSupportActionBar().setHomeAsUpIndicator(draw);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         }
         if(getIntent().getStringExtra("check").equals("admin")){
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.menadmin, menu);
+            DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+
+            getSupportActionBar().setTitle("admin: " + db.getDataAdmin().getUsername());
 
             return true;
         }
@@ -94,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent iOrderHistory = new Intent(getApplicationContext(), OrderHistory.class);
                 User userOrderHistory = (User) getIntent().getSerializableExtra("user");
                 iOrderHistory.putExtra("user", userOrderHistory);
+
                 startActivity(iOrderHistory);
                 return true;
 

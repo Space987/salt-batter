@@ -9,12 +9,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,10 +37,11 @@ public class EditUser extends AppCompatActivity {
     EditText userText, passText, edit;
     Button updateBtn, deleteBtn,changeBtn;
     ImageView imageView;
+    boolean checkLengthUser = true;
+    boolean checkLengthPass = true;
+    boolean sameUserCheck = false;
 
-    MediaPlayer mediaPlayer;
 
-    private boolean isChecked = false;
 
     int SELECT_PICTURE = 200;
 
@@ -46,6 +52,7 @@ public class EditUser extends AppCompatActivity {
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
         edit = new EditText(EditUser.this);
 
+        edit.setTransformationMethod(PasswordTransformationMethod.getInstance());
         userText = findViewById(R.id.editTextUsernameEdit);
         passText = findViewById(R.id.editTextPasswordEdit);
         updateBtn = findViewById(R.id.buttonUpdate);
@@ -66,9 +73,11 @@ public class EditUser extends AppCompatActivity {
 
                 .setIcon(android.R.drawable.ic_dialog_alert)
 
-                .setTitle("Please enter your current password")
+                .setTitle("Please enter your current password to verify")
 
                 .setView(edit)
+
+                .setCancelable(false)
 
 
                 .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
@@ -80,6 +89,10 @@ public class EditUser extends AppCompatActivity {
                                 if (edit.getText().toString().equals(user3.getPassword())) {
 
                                     passText.setText(user3.getPassword());
+
+                                    userText.setBackgroundResource(R.drawable.my_shape_admin);
+                                    passText.setBackgroundResource(R.drawable.my_shape_admin);
+                                    Toast.makeText(getApplicationContext(), "Successfully verified!", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(EditUser.this, "Incorrect Password!", Toast.LENGTH_SHORT).show();
 
@@ -128,22 +141,150 @@ public class EditUser extends AppCompatActivity {
                 Bitmap bmap = imageView.getDrawingCache();
                 byte[] imgData = getBitmapAsByteArray(bmap);
 
-                if (userText.getText().toString().matches("") || passText.getText().toString().matches("")) {
-                    Toast.makeText(getApplicationContext(), "Values cannot be empty", Toast.LENGTH_SHORT).show();
-                } else {
-                    db.updateData(user.getId(), userText.getText().toString(), passText.getText().toString(), imgData);
+                if(!userText.getText().toString().matches("")) {
+                    userText.setBackgroundResource(R.drawable.my_shape_admin);
+
+                    if (!passText.getText().toString().matches("")) {
+                        passText.setBackgroundResource(R.drawable.my_shape_admin);
+
+                        if(checkLengthUser && checkLengthPass) {
+
+                            for (User user4 : db.getData()) {
+                                if (user4.getUsername().equals(userText.getText().toString())) {
+                                        sameUserCheck = true;
+                                        break;
+                                }
+                            }
+                            if (sameUserCheck && !db.getDataSpecific(user.getId()).getUsername().equals(userText.getText().toString())) {
+                                userText.setError("Username already taken!");
+                                userText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                                sameUserCheck = false;
 
 
-                    userText.setText(db.getDataSpecific(user.getId()).getUsername());
-                    passText.setText(db.getDataSpecific(user.getId()).getPassword());
-                    Toast.makeText(EditUser.this, "User Updated!", Toast.LENGTH_SHORT).show();
+
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(EditUser.this)
+
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+
+                                        .setTitle("Are you sure you want to update profile?")
+                                        .setCancelable(false)
+
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                db.updateData(user.getId(), userText.getText().toString(), passText.getText().toString(), imgData);
+
+                                                getSupportActionBar().setTitle("user: " + db.getDataSpecific(user.getId()).getUsername());
+                                                userText.setText(db.getDataSpecific(user.getId()).getUsername());
+                                                passText.setText(db.getDataSpecific(user.getId()).getPassword());
+                                                Toast.makeText(EditUser.this, "User Updated!", Toast.LENGTH_SHORT).show();
+                                                sameUserCheck = false;
+                                            }
+                                        })
+
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                //set what should happen when negative button is clicked
+
+                                            }
+                                        })
+                                        .show();
 
 
+                            }
+                        }
+                        } else {
+                            passText.setError("You cannot leave password input blank!");
+                            passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                        }
+                    }
+
+                else{
+                    userText.setError("You cannot leave username input blank!");
+                    userText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    if(passText.getText().toString().matches("")){
+                        passText.setError("You cannot leave password input blank!");
+                        passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    }
+                    else{
+                        passText.setBackgroundResource(R.drawable.my_shape_admin);
+                    }
                 }
             }
         });
+        InputFilter[] filtersMaxUser = new InputFilter[1];
+        filtersMaxUser[0] = new InputFilter.LengthFilter(17);
+        userText.setFilters(filtersMaxUser);
+
+        userText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 17) {
+                    userText.setError("Max of 16 characters!");
+                    userText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    checkLengthUser = false;
+                }
+
+                if (s.length() < 17) {
+                    userText.setBackgroundResource(R.drawable.my_shape_admin);
+                    checkLengthUser = true;
+                }
 
 
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        InputFilter[] filtersMaxPass = new InputFilter[1];
+        filtersMaxPass[0] = new InputFilter.LengthFilter(17);
+        passText.setFilters(filtersMaxPass);
+
+        passText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() == 17) {
+                    passText.setError("Max of 16 characters!");
+                    passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    checkLengthPass = false;
+                }
+
+                if (s.length() < 6) {
+                    passText.setError("Minimum of 6 characters!");
+                    passText.setBackgroundResource(R.drawable.my_shape_error_admin);
+                    checkLengthPass = false;
+                }
+
+                if (s.length() >= 6 && s.length() < 17) {
+                    InputFilter[] filtersMaxPass = new InputFilter[1];
+                    filtersMaxPass[0] = new InputFilter.LengthFilter(17);
+                    passText.setFilters(filtersMaxPass);
+                    passText.setBackgroundResource(R.drawable.my_shape_admin);
+                    checkLengthPass = true;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,7 +294,7 @@ public class EditUser extends AppCompatActivity {
                         .setIcon(android.R.drawable.ic_dialog_alert)
 
                         .setTitle("Are you sure you want to delete?")
-
+                        .setCancelable(false)
 
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
@@ -225,6 +366,12 @@ public class EditUser extends AppCompatActivity {
 
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.men, menu);
+
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
             return super.onCreateOptionsMenu(menu);
     }
 

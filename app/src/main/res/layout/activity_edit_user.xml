@@ -47,8 +47,8 @@
 
     <EditText
         android:id="@+id/editTextUsernameEdit"
-        android:layout_width="177dp"
-        android:layout_height="56dp"
+        android:layout_width="205dp"
+        android:layout_height="55dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Username"
@@ -73,15 +73,15 @@
 
     <EditText
         android:id="@+id/editTextPasswordEdit"
-        android:layout_width="174dp"
-        android:layout_height="54dp"
+        android:layout_width="201dp"
+        android:layout_height="55dp"
         android:ems="10"
 
         android:inputType="none"
         android:text="*****"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.932"
+        app:layout_constraintHorizontal_bias="0.976"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.223" />

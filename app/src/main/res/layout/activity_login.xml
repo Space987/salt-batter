@@ -50,11 +50,13 @@
             android:src="@drawable/ic_baseline_email_24" />
 
         <EditText
+
             android:id="@+id/editTextUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Username" />
+
 
 
     </LinearLayout>

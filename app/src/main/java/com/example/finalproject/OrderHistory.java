@@ -4,6 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +20,7 @@ import android.widget.Toast;
 
 public class OrderHistory extends AppCompatActivity {
 
-    TextView totalOrders, userNameText;
+    TextView totalOrders;
     DatabaseHelper db;
 
     ListView lv;
@@ -27,11 +31,9 @@ public class OrderHistory extends AppCompatActivity {
         lv = findViewById(R.id.orderHistoryListView);
         totalOrders = findViewById(R.id.textViewOrderTotal);
         db = new DatabaseHelper(getApplicationContext());
-        userNameText = findViewById(R.id.textViewName);
 
         User user = (User) getIntent().getSerializableExtra("user");
 
-        userNameText.setText(db.getDataSpecific(user.getId()).getUsername());
 
         totalOrders.setText(String.valueOf(db.getDataSpecific(user.getId()).getTotal()));
 
@@ -47,6 +49,18 @@ public class OrderHistory extends AppCompatActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.men, menu);
+
+        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+        User user = (User) getIntent().getSerializableExtra("user");
+
+        getSupportActionBar().setTitle("user: " +db.getDataSpecific(user.getId()).getUsername());
+
+        Bitmap bmp = BitmapFactory.decodeByteArray(db.getUserFoodImage(user.getId()), 0, db.getUserFoodImage(user.getId()).length);
+        Drawable draw = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bmp, 300, 300, true));
+
+        getSupportActionBar().setHomeAsUpIndicator(draw);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return true;
     }
